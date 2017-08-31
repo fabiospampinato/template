@@ -1,0 +1,52 @@
+
+API:
+  ☐ add the concept of a template.json file @probably
+  Templating:
+    ☐ handlerbars
+    ☐ eval helper
+    ☐ lodash helper
+  Variables:
+    ☐ automatically sort them by name
+    ☐ support custom sorting
+    ☐ support validation
+    ☐ support global and local defaults
+  Commands:
+    ☐ create
+      ☐ accepts template name
+      ☐ accepts a project name
+        ☐ can also default to the template name, or if it is `template-foo` to `foo`
+      ☐ accepts github shorthand
+        ☐ automatically installs it
+      ☐ automatically updates templates before parsing them
+    ☐ install
+      ☐ accepts a path
+      ☐ accepts a github shorthand
+      ☐ accepts a template name
+        ☐ can also default to the repository name, or if it is `template-foo` to `foo`
+    ☐ list
+      ☐ lists all installed projects
+    ☐ update
+      ☐ can update all templates at once
+      ☐ can update a single template
+        ☐ supports a template name
+        ☐ supports a github shorthand
+  DOCS:
+    ☐ write a small doc describing all the commands and the API
+    ☐ list all known compatible templates (basically all made by me)
+
+CLI:
+  Commands:
+    ☐ create
+    ☐ install
+    ☐ list
+    ☐ update
+  ☐ auto-completition
+
+Update:
+  ☐ Switch from khaos to this
+
+Others:
+  ☐ `npm unlink`
+  ☐ improve logged strings
+  ☐ Install all templates:
+    template install https://github.com/fabiospampinato/template-template && template install https://github.com/fabiospampinato/template-typescript-package && template install https://github.com/fabiospampinato/template-vscode-extension && template install https://github.com/fabiospampinato/template-webpack-website
