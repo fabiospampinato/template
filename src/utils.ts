@@ -3,11 +3,13 @@
 
 import * as _ from 'lodash';
 import * as absolute from 'absolute';
+import * as del from 'del';
 import * as handlebars from 'handlebars';
 import * as finder from 'fs-finder';
 import * as inquirer from 'inquirer';
 import * as isDirectory from 'is-directory';
 import * as isUrl from 'is-url';
+import * as loadJSON from 'load-json-file';
 import * as path from 'path';
 import Config from './config';
 import * as Helpers from './helpers';
@@ -17,17 +19,23 @@ import * as Middlewares from './middlewares';
 
 const Utils = {
 
-  useHelpers () {
+  async loadJSON ( path, fallback = {} ) {
 
-    handlebars.registerHelper ( 'eval', Helpers.eval );
-    handlebars.registerHelper ( '_', Helpers.lodash );
+    try {
+
+      return await loadJSON ( path );
+
+    } catch ( e ) {
+
+      return fallback;
+
+    }
 
   },
 
-  useMiddlewares ( metalsmith ) {
+  delete ( path ) {
 
-    metalsmith.use ( Middlewares.prompt );
-    metalsmith.use ( Middlewares.render );
+    return del ( path, { force: true } );
 
   },
 
@@ -43,7 +51,7 @@ const Utils = {
 
         /* GITHUB REPOSITORY */
 
-        const repo = repository.match ( /.+github\.com\/([^\s\/.]+)\/([^\s\/]+)(?:$|\/)/ );
+        const repo = repository.match ( /.+github\.com\/([^\s\/.]+)\/([^\s\/#]+)(?:$|\/|#)/ );
 
         if ( repo ) return `https://github.com/${repo[1]}/${repo[2]}.git`;
 
@@ -81,7 +89,7 @@ const Utils = {
 
     getPaths () {
 
-      return finder.in ( Config.directory ).findDirectories ();
+      return _.sortBy ( finder.in ( Config.directory ).findDirectories (), [p => p.toLowerCase ()] ) as string[];
 
     },
 
@@ -105,9 +113,9 @@ const Utils = {
 
     },
 
-    guessName ( repository: string ) {
+    guessName ( endpoint: string ) {
 
-      const lastPart = _.last ( repository.split ( '/' ) );
+      const lastPart = _.last ( endpoint.split ( '/' ) );
 
       if ( !lastPart ) return;
 
@@ -121,7 +129,7 @@ const Utils = {
 
   prompt: {
 
-    async confirmation ( message: string, fallback = false ) {
+    async confirm ( message: string, fallback = false ) {
 
       const {result} = await inquirer.prompt ({
         type: 'confirm',
@@ -131,6 +139,137 @@ const Utils = {
       });
 
       return !!result;
+
+    },
+
+    async input ( message, fallback? ) {
+
+      const {result} = await inquirer.prompt ({
+        type: 'input',
+        name: 'result',
+        message,
+        default: fallback,
+        validate: x => !( !_.isUndefined ( fallback ) && ( _.isUndefined ( x ) || ( _.isString ( x ) && !x.trim () ) ) )
+      });
+
+      return result;
+
+    },
+
+    async list ( message, arr, fallback? ) {
+
+      const {result} = await inquirer.prompt ({
+        type: 'list',
+        name: 'result',
+        choices: arr,
+        message,
+        default: fallback,
+        validate: x => !( !_.isUndefined ( fallback ) && ( _.isUndefined ( x ) || ( _.isString ( x ) && !x.trim () ) ) )
+      });
+
+      return result;
+
+    },
+
+    command () {
+
+      const commands = ['create', 'list', 'install', 'uninstall', 'update'];
+
+      return Utils.prompt.list ( 'What command to you want to execute?', commands );
+
+    },
+
+    template () {
+
+      const templates = Utils.templates.getNames ();
+
+      return Utils.prompt.list ( 'What template to you want to use?', templates );
+
+    }
+
+  },
+
+  handlebars: {
+
+    useHelpers () {
+
+      handlebars.registerHelper ({
+        eval: Helpers.eval,
+        _: Helpers.lodash
+      });
+
+    },
+
+    getSchema ( template ) {
+
+      const body = _.isString ( template ) ? handlebars.parse ( template ).body : template,
+            schema = {},
+            schemaTypes = {
+              BlockStatement: 'confirm',
+              MustacheStatement: 'input'
+            };
+
+      body.forEach ( obj => {
+
+        const {type, params, path, program} = obj,
+              schemaType = schemaTypes[type],
+              objSchema = { type: schemaType };
+
+        if ( !schemaType ) return;
+
+        if ( params.length ) {
+
+          params.forEach ( param => {
+
+            const {type, parts} = param;
+
+            if ( type !== 'PathExpression' ) return;
+
+            schema[parts.join ( '.' )] = objSchema;
+
+          });
+
+        } else if ( path ) {
+
+          schema[path.parts.join ( '.' )] = objSchema;
+
+        }
+
+        if ( obj.hash ) {
+
+          obj.hash.pairs.forEach ( pair => {
+
+            const {original} = pair.value;
+
+            if ( !_.isString ( original ) || !original.match ( /[^\s;.]+/) ) return;
+
+            schema[original] = objSchema;
+
+          });
+
+        }
+
+        if ( program ) {
+
+          _.extend ( schema, Utils.handlebars.getSchema ( program.body ) );
+
+        }
+
+      });
+
+      return schema;
+
+    }
+
+  },
+
+  metalsmith: {
+
+    useMiddlewares ( metalsmith ) {
+
+      metalsmith.use ( Middlewares.schema )
+                .use ( Middlewares.prompt )
+                .use ( Middlewares.render );
 
     }
 

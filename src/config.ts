@@ -7,7 +7,9 @@ import * as path from 'path';
 /* CONFIG */
 
 const Config = {
-  directory: path.join ( os.homedir (), '.template' )
+  autoUpdate: true,
+  directory: path.join ( os.homedir (), '.template' ),
+  templateConfigName: 'template.json'
 };
 
 /* EXPORT */

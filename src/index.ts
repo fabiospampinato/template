@@ -3,20 +3,62 @@
 
 import * as chalk from 'chalk';
 import {exec} from 'child_process';
-import * as del from 'del';
 import * as fs from 'fs';
 import * as metalsmith from 'metalsmith';
 import * as path from 'path';
 import * as pify from 'pify';
+import Config from './config';
 import Utils from './utils';
 
 /* TEMPLATE */
 
 const Template = {
 
-  async create ( template: string, project?: string ) {
+  async wizard () {
 
-    const ms = metalsmith ( __dirname );
+    const command = await Utils.prompt.command ();
+
+    switch ( command ) {
+
+      case 'create': {
+        const template = await Utils.prompt.template (),
+              project = await Utils.prompt.input ( 'Project name:', false );
+        return Template.create ( template, project );
+      }
+
+      case 'list': {
+        return Template.list ();
+      }
+
+      case 'install': {
+        const repository = await Utils.prompt.input ( 'Repository to install:' ),
+              template = await Utils.prompt.input ( 'Template name:', false );
+        return Template.install ( repository, template );
+      }
+
+      case 'uninstall': {
+        const all = await Utils.prompt.confirm ( 'Do you want to uninstall all templates?' );
+        if ( all ) return Template.uninstall ( false );
+        const templates = Utils.templates.getNames ();
+        if ( !templates.length ) return console.error ( 'No templates installed' );
+        const template = await Utils.prompt.template ();
+        return Template.uninstall ( template );
+      }
+
+      case 'update': {
+        const all = await Utils.prompt.confirm ( 'Do you want to update all templates?' );
+        if ( all ) return Template.update ();
+        const templates = Utils.templates.getNames ();
+        if ( !templates.length ) return console.error ( 'No templates installed' );
+        const template = await Utils.prompt.template ();
+        return Template.update ( template );
+      }
+
+    }
+
+  },
+
+  async create ( template: string, project?: string ) {
 
     project = project || `my-${template}`;
 
@@ -24,12 +66,27 @@ const Template = {
           source = templatePath && path.join ( templatePath, 'template' ),
           destination = path.join ( process.cwd (), project );
 
-    if ( !source ) return console.error ( `${template} is not a valid template` );
+    if ( !source ) return console.error ( `"${template}" is not a valid template` );
 
-    Utils.useHelpers ();
-    Utils.useMiddlewares ( ms );
+    if ( fs.existsSync ( destination ) ) {
+
+      const okay = await Utils.prompt.confirm ( `There's already a file or folder named "${project}", do you want to overwrite it?` );
+
+      if ( !okay ) return;
+
+      await Utils.delete ( destination );
+
+    }
+
+    if ( Config.autoUpdate ) await Template.update ( template );
+
+    const ms = metalsmith ( __dirname );
+
+    Utils.handlebars.useHelpers ();
+    Utils.metalsmith.useMiddlewares ( ms );
 
     ms.clean ( true )
+      .frontmatter ( false )
       .source ( source )
       .destination ( destination )
       .build ( err => {
@@ -48,9 +105,7 @@ const Template = {
 
     } else {
 
-      names.forEach ( name => {
-        console.log ( `template ${chalk.magenta ( '<command>' )} ${name}` );
-      });
+      names.forEach ( name => console.log ( name ) );
 
     }
 
@@ -62,7 +117,7 @@ const Template = {
 
     if ( endpoint ) {
 
-      template = template || Utils.template.guessName ( repository );
+      template = template || Utils.template.guessName ( endpoint );
 
       if ( !template ) return console.error ( 'You must provide a template name' );
 
@@ -70,34 +125,47 @@ const Template = {
 
       if ( fs.existsSync ( destination ) ) {
 
-        const okay = await Utils.prompt.confirmation ( 'This template is already installed, do you want to overwrite it?' );
+        const okay = await Utils.prompt.confirm ( `There's already a templated named "${template}", do you want to overwrite it?` );
 
         if ( !okay ) return;
 
-        await del ( destination );
+        await Utils.delete ( destination );
 
       }
 
-      await pify ( exec )( `git clone ${endpoint} ${destination}` );
+      try {
 
-      console.log ( `Template "${repository}" installed as "${template}"` );
-      console.log ( `Run \`template create ${template} ${chalk.blue ( '<project>' )}\` to get started` );
+        await pify ( exec )( `git clone ${endpoint} ${destination}` );
+
+        console.log ( `Template "${repository}" installed as "${template}"` );
+        console.log ( `Run "template create ${template} ${chalk.blue ( '<project>' )}" to get started` );
+
+      } catch ( e ) {
+
+        console.error ( `Failed to install template "${template}"` );
+        console.error ( e.message );
+
+      }
 
     } else {
 
-      console.log ( `${repository} is not a repository` );
+      console.log ( `"${repository}" is not a repository` );
 
     }
 
   },
 
-  async uninstall ( template?: string ) {
+  async uninstall ( template?: string | boolean ) {
 
     if ( !template ) { // All
 
-      const okay = await Utils.prompt.confirmation ( 'Are you sure you want to uninstall all templates?' );
+      if ( template !== false ) {
 
-      if ( !okay ) return;
+        const okay = await Utils.prompt.confirm ( 'Are you sure you want to uninstall all templates?' );
+
+        if ( !okay ) return;
+
+      }
 
       const names = await Utils.templates.getNames ();
 
@@ -109,11 +177,11 @@ const Template = {
 
       const folderPath = Utils.template.getPath ( template, true );
 
-      if ( !folderPath ) return console.error ( `${template} is not installed` );
+      if ( !folderPath ) return console.error ( `"${template}" is not installed` );
 
-      await del ( folderPath );
+      await Utils.delete ( folderPath );
 
-      console.log ( `${template} deleted` );
+      console.log ( `"${template}" deleted` );
 
     }
 
@@ -133,11 +201,28 @@ const Template = {
 
       const folderPath = Utils.template.getPath ( template, true );
 
-      if ( !folderPath ) return console.error ( `${template} is not installed` );
+      if ( !folderPath ) return console.error ( `"${template}" is not installed` );
 
-      await pify ( exec )( 'git pull', { cwd: folderPath } );
+      try {
 
-      console.log ( `${template} has been updated` );
+        const result = await pify ( exec )( 'git pull', { cwd: folderPath } );
+
+        if ( result.match ( /already up-to-date/i ) ) {
+
+          console.log ( `No updates available for "${template}"` );
+
+        } else {
+
+          console.log ( `"${template}" has been updated` );
+
+        }
+
+      } catch ( e ) {
+
+        console.error ( `Failed to update template "${template}"` );
+        console.error ( e.message );
+
+      }
 
     }
 

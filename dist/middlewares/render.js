@@ -37,22 +37,26 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var consolidate = require("consolidate");
+var isBinary = require("isbinaryfile");
 var pify = require("pify");
 /* RENDER */
 function render(files, metalsmith, next) {
     return __awaiter(this, void 0, void 0, function () {
-        var render, paths, metadata, _i, paths_1, path, template, rendered;
+        var metadata, render, paths, _i, paths_1, path, contents, template, rendered;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    render = pify(consolidate.handlebars.render), paths = Object.keys(files), metadata = metalsmith.metadata();
+                    metadata = metalsmith.metadata(), render = pify(consolidate.handlebars.render), paths = Object.keys(files);
                     _i = 0, paths_1 = paths;
                     _a.label = 1;
                 case 1:
                     if (!(_i < paths_1.length)) return [3 /*break*/, 4];
                     path = paths_1[_i];
-                    template = files[path].contents.toString();
-                    return [4 /*yield*/, render(template, metadata)];
+                    contents = files[path].contents;
+                    if (isBinary.sync(contents, contents.length))
+                        return [3 /*break*/, 3];
+                    template = contents.toString();
+                    return [4 /*yield*/, render(template, metadata.renderVariables)];
                 case 2:
                     rendered = _a.sent();
                     files[path].contents = new Buffer(rendered);
@@ -69,4 +73,4 @@ function render(files, metalsmith, next) {
 }
 /* EXPORT */
 exports.default = render;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicmVuZGVyLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vc3JjL21pZGRsZXdhcmVzL3JlbmRlci50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFDQSxZQUFZOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztBQUVaLHlDQUEyQztBQUMzQywyQkFBNkI7QUFFN0IsWUFBWTtBQUVaLGdCQUF3QixLQUFLLEVBQUUsVUFBVSxFQUFFLElBQUk7O1lBRXZDLE1BQU0sRUFDTixLQUFLLEVBQ0wsUUFBUSxlQUVKLElBQUk7Ozs7NkJBSkMsSUFBSSxDQUFHLFdBQVcsQ0FBQyxVQUFVLENBQUMsTUFBTSxDQUFFLFVBQ3ZDLE1BQU0sQ0FBQyxJQUFJLENBQUcsS0FBSyxDQUFFLGFBQ2xCLFVBQVUsQ0FBQyxRQUFRLEVBQUc7Ozs7eUJBRXJCLENBQUEsbUJBQUssQ0FBQTs7K0JBRUosS0FBSyxDQUFDLElBQUksQ0FBQyxDQUFDLFFBQVEsQ0FBQyxRQUFRLEVBQUc7b0JBQ2hDLHFCQUFNLE1BQU0sQ0FBRyxRQUFRLEVBQUUsUUFBUSxDQUFFLEVBQUE7OytCQUFuQyxTQUFtQztvQkFFcEQsS0FBSyxDQUFDLElBQUksQ0FBQyxDQUFDLFFBQVEsR0FBRyxJQUFJLE1BQU0sQ0FBRyxRQUFRLENBQUUsQ0FBQzs7O29CQUwvQixJQUFLLENBQUE7OztvQkFTdkIsSUFBSSxFQUFHLENBQUM7Ozs7O0NBRVQ7QUFFRCxZQUFZO0FBRVosa0JBQWUsTUFBTSxDQUFDIn0=
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicmVuZGVyLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vc3JjL21pZGRsZXdhcmVzL3JlbmRlci50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFDQSxZQUFZOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztBQUVaLHlDQUEyQztBQUMzQyx1Q0FBeUM7QUFDekMsMkJBQTZCO0FBRTdCLFlBQVk7QUFFWixnQkFBd0IsS0FBSyxFQUFFLFVBQVUsRUFBRSxJQUFJOztZQUV2QyxRQUFRLEVBQ1IsTUFBTSxFQUNOLEtBQUssZUFFRCxJQUFJLEVBRUwsUUFBUTs7OzsrQkFOQSxVQUFVLENBQUMsUUFBUSxFQUFHLFdBQ3hCLElBQUksQ0FBRyxXQUFXLENBQUMsVUFBVSxDQUFDLE1BQU0sQ0FBRSxVQUN2QyxNQUFNLENBQUMsSUFBSSxDQUFHLEtBQUssQ0FBRTs7Ozt5QkFFakIsQ0FBQSxtQkFBSyxDQUFBOzsrQkFFRixLQUFLLENBQUMsSUFBSSxDQUFDO29CQUU5QixFQUFFLENBQUMsQ0FBRSxRQUFRLENBQUMsSUFBSSxDQUFHLFFBQVEsRUFBRSxRQUFRLENBQUMsTUFBTSxDQUFHLENBQUM7d0JBQUMsTUFBTSxrQkFBRzsrQkFFM0MsUUFBUSxDQUFDLFFBQVEsRUFBRztvQkFDcEIscUJBQU0sTUFBTSxDQUFHLFFBQVEsRUFBRSxRQUFRLENBQUMsZUFBZSxDQUFFLEVBQUE7OytCQUFuRCxTQUFtRDtvQkFFcEUsS0FBSyxDQUFDLElBQUksQ0FBQyxDQUFDLFFBQVEsR0FBRyxJQUFJLE1BQU0sQ0FBRyxRQUFRLENBQUUsQ0FBQzs7O29CQVQvQixJQUFLLENBQUE7OztvQkFhdkIsSUFBSSxFQUFHLENBQUM7Ozs7O0NBRVQ7QUFFRCxZQUFZO0FBRVosa0JBQWUsTUFBTSxDQUFDIn0=

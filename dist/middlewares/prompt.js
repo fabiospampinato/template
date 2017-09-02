@@ -41,20 +41,26 @@ var inquirer = require("inquirer");
 /* PROMPT */
 function prompt(files, metalsmith, next) {
     return __awaiter(this, void 0, void 0, function () {
-        var prompts, questions, answers, metadata;
+        function validate(x) {
+            return !(_.isUndefined(x) || (_.isString(x) && !x.trim()));
+        }
+        function makeQuestion(prompt) {
+            var obj = metadata.schema.variables[prompt];
+            return _.extend({
+                name: prompt,
+                message: prompt + ":",
+                validate: _.isUndefined(obj.default) ? validate : function () { return true; }
+            }, obj);
+        }
+        var metadata, promptsOrder, prompts, questions, variables;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    console.log(metalsmith.metadata());
-                    prompts = ['author', 'name', 'instanceName', 'owner'], questions = prompts.map(function (prompt) { return ({
-                        type: 'input',
-                        name: prompt,
-                        message: prompt + ":"
-                    }); });
+                    metadata = metalsmith.metadata(), promptsOrder = metadata.schema.variablesOrder || [], prompts = promptsOrder.concat(_.sortBy(_.difference(Object.keys(metadata.schema.variables), promptsOrder), [function (x) { return x.toLowerCase(); }])), questions = prompts.map(makeQuestion);
                     return [4 /*yield*/, inquirer.prompt(questions)];
                 case 1:
-                    answers = _a.sent(), metadata = metalsmith.metadata();
-                    _.extend(metadata, answers);
+                    variables = _a.sent();
+                    metadata.renderVariables = variables;
                     next();
                     return [2 /*return*/];
             }
@@ -64,4 +70,4 @@ function prompt(files, metalsmith, next) {
 ;
 /* EXPORT */
 exports.default = prompt;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHJvbXB0LmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vc3JjL21pZGRsZXdhcmVzL3Byb21wdC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFDQSxZQUFZOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztBQUVaLDBCQUE0QjtBQUM1QixtQ0FBcUM7QUFFckMsWUFBWTtBQUVaLGdCQUF3QixLQUFLLEVBQUUsVUFBVSxFQUFFLElBQUk7Ozs7OztvQkFDN0MsT0FBTyxDQUFDLEdBQUcsQ0FBQyxVQUFVLENBQUMsUUFBUSxFQUFFLENBQUMsQ0FBQzs4QkFDbkIsQ0FBQyxRQUFRLEVBQUUsTUFBTSxFQUFFLGNBQWMsRUFBRSxPQUFPLENBQUMsY0FDekMsT0FBTyxDQUFDLEdBQUcsQ0FBRyxVQUFBLE1BQU0sSUFBSSxPQUFBLENBQUM7d0JBQ25DLElBQUksRUFBRSxPQUFPO3dCQUNiLElBQUksRUFBRSxNQUFNO3dCQUNaLE9BQU8sRUFBSyxNQUFNLE1BQUc7cUJBQ3RCLENBQUMsRUFKa0MsQ0FJbEMsQ0FBQztvQkFDTyxxQkFBTSxRQUFRLENBQUMsTUFBTSxDQUFHLFNBQVMsQ0FBRSxFQUFBOzs4QkFBbkMsU0FBbUMsYUFDbEMsVUFBVSxDQUFDLFFBQVEsRUFBRztvQkFFdkMsQ0FBQyxDQUFDLE1BQU0sQ0FBRyxRQUFRLEVBQUUsT0FBTyxDQUFFLENBQUM7b0JBRS9CLElBQUksRUFBRyxDQUFDOzs7OztDQUVUO0FBQUEsQ0FBQztBQUVGLFlBQVk7QUFFWixrQkFBZSxNQUFNLENBQUMifQ==
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHJvbXB0LmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vc3JjL21pZGRsZXdhcmVzL3Byb21wdC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFDQSxZQUFZOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztBQUVaLDBCQUE0QjtBQUM1QixtQ0FBcUM7QUFFckMsWUFBWTtBQUVaLGdCQUF3QixLQUFLLEVBQUUsVUFBVSxFQUFFLElBQUk7O1FBRTdDLGtCQUFvQixDQUFDO1lBQ25CLE1BQU0sQ0FBQyxDQUFDLENBQUUsQ0FBQyxDQUFDLFdBQVcsQ0FBRyxDQUFDLENBQUUsSUFBSSxDQUFFLENBQUMsQ0FBQyxRQUFRLENBQUcsQ0FBQyxDQUFFLElBQUksQ0FBQyxDQUFDLENBQUMsSUFBSSxFQUFHLENBQUUsQ0FBRSxDQUFDO1FBQ3hFLENBQUM7UUFFRCxzQkFBd0IsTUFBTTtZQUM1QixJQUFNLEdBQUcsR0FBRyxRQUFRLENBQUMsTUFBTSxDQUFDLFNBQVMsQ0FBQyxNQUFNLENBQUMsQ0FBQztZQUM5QyxNQUFNLENBQUMsQ0FBQyxDQUFDLE1BQU0sQ0FBRztnQkFDaEIsSUFBSSxFQUFFLE1BQU07Z0JBQ1osT0FBTyxFQUFLLE1BQU0sTUFBRztnQkFDckIsUUFBUSxFQUFFLENBQUMsQ0FBQyxXQUFXLENBQUcsR0FBRyxDQUFDLE9BQU8sQ0FBRSxHQUFHLFFBQVEsR0FBRyxjQUFNLE9BQUEsSUFBSSxFQUFKLENBQUk7YUFDaEUsRUFBRSxHQUFHLENBQUUsQ0FBQztRQUNYLENBQUM7Ozs7OytCQUVnQixVQUFVLENBQUMsUUFBUSxFQUFHLGlCQUNsQixRQUFRLENBQUMsTUFBTSxDQUFDLGNBQWMsSUFBSSxFQUFFLFlBQ3pDLFlBQVksQ0FBQyxNQUFNLENBQUcsQ0FBQyxDQUFDLE1BQU0sQ0FBRyxDQUFDLENBQUMsVUFBVSxDQUFHLE1BQU0sQ0FBQyxJQUFJLENBQUcsUUFBUSxDQUFDLE1BQU0sQ0FBQyxTQUFTLENBQUUsRUFBRSxZQUFZLENBQUUsRUFBRSxDQUFDLFVBQUEsQ0FBQyxJQUFJLE9BQUEsQ0FBQyxDQUFDLFdBQVcsRUFBRyxFQUFoQixDQUFnQixDQUFDLENBQUUsQ0FBRSxjQUNwSSxPQUFPLENBQUMsR0FBRyxDQUFHLFlBQVksQ0FBRTtvQkFDNUIscUJBQU0sUUFBUSxDQUFDLE1BQU0sQ0FBRyxTQUFTLENBQUUsRUFBQTs7Z0NBQW5DLFNBQW1DO29CQUVyRCxRQUFRLENBQUMsZUFBZSxHQUFHLFNBQVMsQ0FBQztvQkFFckMsSUFBSSxFQUFHLENBQUM7Ozs7O0NBRVQ7QUFBQSxDQUFDO0FBRUYsWUFBWTtBQUVaLGtCQUFlLE1BQU0sQ0FBQyJ9

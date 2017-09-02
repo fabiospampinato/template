@@ -13,6 +13,8 @@ async function CLI () {
 
   caporal
     .version ( pkg.version )
+    /* WIZARD */
+    .action ( () => Template.wizard () )
     /* CREATE */
     .command ( 'create', 'Create a project from a template' )
     .argument ( '<template>', 'Template name' )

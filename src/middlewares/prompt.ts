@@ -7,17 +7,27 @@ import * as inquirer from 'inquirer';
 /* PROMPT */
 
 async function prompt ( files, metalsmith, next ) {
-  console.log(metalsmith.metadata());
-  const prompts = ['author', 'name', 'instanceName', 'owner'],
-        questions = prompts.map ( prompt => ({
-          type: 'input',
-          name: prompt,
-          message: `${prompt}:`
-        })),
-        answers = await inquirer.prompt ( questions ),
-        metadata = metalsmith.metadata ();
 
-  _.extend ( metadata, answers );
+  function validate ( x ) {
+    return !( _.isUndefined ( x ) || ( _.isString ( x ) && !x.trim () ) );
+  }
+
+  function makeQuestion ( prompt ) {
+    const obj = metadata.schema.variables[prompt];
+    return _.extend ( {
+      name: prompt,
+      message: `${prompt}:`,
+      validate: _.isUndefined ( obj.default ) ? validate : () => true
+    }, obj );
+  }
+
+  const metadata = metalsmith.metadata (),
+        promptsOrder = metadata.schema.variablesOrder || [],
+        prompts = promptsOrder.concat ( _.sortBy ( _.difference ( Object.keys ( metadata.schema.variables ), promptsOrder ), [x => x.toLowerCase ()] ) ),
+        questions = prompts.map ( makeQuestion ),
+        variables = await inquirer.prompt ( questions );
+
+  metadata.renderVariables = variables;
 
   next ();
 
