@@ -1,6 +1,6 @@
 {
   "name": "@fabiospampinato/template",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A super-simple way to create new projects based on templates.",
   "bin": "dist/bin/index.js",
   "main": "dist/index.js",
@@ -38,7 +38,13 @@
     "type": "git",
     "url": "https://github.com/fabiospampinato/template.git"
   },
-  "keywords": [],
+  "keywords": [
+    "template",
+    "scaffold",
+    "handlebars",
+    "cli",
+    "simple"
+  ],
   "dependencies": {
     "absolute": "0.0.1",
     "caporal": "git://github.com/Szpadel/Caporal.js.git#fix-help-def-command",
