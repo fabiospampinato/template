@@ -4,6 +4,7 @@
 import * as chalk from 'chalk';
 import {exec} from 'child_process';
 import * as fs from 'fs';
+import ask from 'inquirer-helpers';
 import * as metalsmith from 'metalsmith';
 import * as path from 'path';
 import * as pify from 'pify';
@@ -22,7 +23,7 @@ const Template = {
 
       case 'create': {
         const template = await Utils.prompt.template (),
-              project = await Utils.prompt.input ( 'Project name:', false );
+              project = await ask.input ( 'Project name:', false );
         return Template.create ( template, project );
       }
 
@@ -31,13 +32,13 @@ const Template = {
       }
 
       case 'install': {
-        const repository = await Utils.prompt.input ( 'Repository to install:' ),
-              template = await Utils.prompt.input ( 'Template name:', false );
+        const repository = await ask.input ( 'Repository to install:' ),
+              template = await ask.input ( 'Template name:', false );
         return Template.install ( repository, template );
       }
 
       case 'uninstall': {
-        const all = await Utils.prompt.confirm ( 'Do you want to uninstall all templates?' );
+        const all = await ask.noYes ( 'Do you want to uninstall all templates?' );
         if ( all ) return Template.uninstall ( false );
         const templates = Utils.templates.getNames ();
         if ( !templates.length ) return console.error ( 'No templates installed' );
@@ -46,7 +47,7 @@ const Template = {
       }
 
       case 'update': {
-        const all = await Utils.prompt.confirm ( 'Do you want to update all templates?' );
+        const all = await ask.noYes ( 'Do you want to update all templates?' );
         if ( all ) return Template.update ();
         const templates = Utils.templates.getNames ();
         if ( !templates.length ) return console.error ( 'No templates installed' );
@@ -70,7 +71,7 @@ const Template = {
 
     if ( fs.existsSync ( destination ) ) {
 
-      const okay = await Utils.prompt.confirm ( `There's already a file or folder named "${project}", do you want to overwrite it?` );
+      const okay = await ask.noYes ( `There's already a file or folder named "${project}", do you want to overwrite it?` );
 
       if ( !okay ) return;
 
@@ -125,7 +126,7 @@ const Template = {
 
       if ( fs.existsSync ( destination ) ) {
 
-        const okay = await Utils.prompt.confirm ( `There's already a templated named "${template}", do you want to overwrite it?` );
+        const okay = await ask.noYes ( `There's already a templated named "${template}", do you want to overwrite it?` );
 
         if ( !okay ) return;
 
@@ -161,7 +162,7 @@ const Template = {
 
       if ( template !== false ) {
 
-        const okay = await Utils.prompt.confirm ( 'Are you sure you want to uninstall all templates?' );
+        const okay = await ask.noYes ( 'Are you sure you want to uninstall all templates?' );
 
         if ( !okay ) return;
 

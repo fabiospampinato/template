@@ -53,7 +53,7 @@
     "del": "^3.0.0",
     "fs-finder": "^1.8.1",
     "handlebars": "^4.0.10",
-    "inquirer": "^3.2.3",
+    "inquirer-helpers": "^1.2.1",
     "is-directory": "^0.3.1",
     "is-url": "^1.2.2",
     "isbinaryfile": "^3.0.2",

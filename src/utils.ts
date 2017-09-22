@@ -6,7 +6,7 @@ import * as absolute from 'absolute';
 import * as del from 'del';
 import * as handlebars from 'handlebars';
 import * as finder from 'fs-finder';
-import * as inquirer from 'inquirer';
+import ask from 'inquirer-helpers';
 import * as isDirectory from 'is-directory';
 import * as isUrl from 'is-url';
 import * as loadJSON from 'load-json-file';
@@ -129,53 +129,11 @@ const Utils = {
 
   prompt: {
 
-    async confirm ( message: string, fallback = false ) {
-
-      const {result} = await inquirer.prompt ({
-        type: 'confirm',
-        name: 'result',
-        message,
-        default: fallback
-      });
-
-      return !!result;
-
-    },
-
-    async input ( message, fallback? ) {
-
-      const {result} = await inquirer.prompt ({
-        type: 'input',
-        name: 'result',
-        message,
-        default: fallback,
-        validate: x => !( !_.isUndefined ( fallback ) && ( _.isUndefined ( x ) || ( _.isString ( x ) && !x.trim () ) ) )
-      });
-
-      return result;
-
-    },
-
-    async list ( message, arr, fallback? ) {
-
-      const {result} = await inquirer.prompt ({
-        type: 'list',
-        name: 'result',
-        choices: arr,
-        message,
-        default: fallback,
-        validate: x => !( !_.isUndefined ( fallback ) && ( _.isUndefined ( x ) || ( _.isString ( x ) && !x.trim () ) ) )
-      });
-
-      return result;
-
-    },
-
     command () {
 
       const commands = ['create', 'list', 'install', 'uninstall', 'update'];
 
-      return Utils.prompt.list ( 'What command to you want to execute?', commands );
+      return ask.list ( 'What command to you want to execute?', commands );
 
     },
 
@@ -183,7 +141,7 @@ const Utils = {
 
       const templates = Utils.templates.getNames ();
 
-      return Utils.prompt.list ( 'What template to you want to use?', templates );
+      return ask.list ( 'What template to you want to use?', templates );
 
     }
 

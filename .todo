@@ -1,9 +1,6 @@
 
 Now:
   ☐ don't run `git pull` if it's not a git repository
-  ☐ use inquirer-helpers
-  ☐ probably broken Utils.prompt.input validation function (also used somewhere else) @high
-  ☐ merge the config with the global config found in `~/.template/template.json`
   ☐ auto-completition
     ☐ command name
     ☐ possibile template name

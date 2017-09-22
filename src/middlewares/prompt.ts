@@ -2,30 +2,18 @@
 /* IMPORT */
 
 import * as _ from 'lodash';
-import * as inquirer from 'inquirer';
+import ask from 'inquirer-helpers';
+import * as series from 'p-series';
 
 /* PROMPT */
 
 async function prompt ( files, metalsmith, next ) {
 
-  function validate ( x ) {
-    return !( _.isUndefined ( x ) || ( _.isString ( x ) && !x.trim () ) );
-  }
-
-  function makeQuestion ( prompt ) {
-    const obj = metadata.schema.variables[prompt];
-    return _.extend ( {
-      name: prompt,
-      message: `${prompt}:`,
-      validate: _.isUndefined ( obj.default ) ? validate : () => true
-    }, obj );
-  }
-
   const metadata = metalsmith.metadata (),
-        promptsOrder = metadata.schema.variablesOrder || [],
-        prompts = promptsOrder.concat ( _.sortBy ( _.difference ( Object.keys ( metadata.schema.variables ), promptsOrder ), [x => x.toLowerCase ()] ) ),
-        questions = prompts.map ( makeQuestion ),
-        variables = await inquirer.prompt ( questions );
+        variablesOrder = metadata.schema.variablesOrder || [],
+        variablesNames = variablesOrder.concat ( _.sortBy ( _.difference ( Object.keys ( metadata.schema.variables ), variablesOrder ), [x => x.toLowerCase ()] ) ),
+        variablesValues = await series ( variablesNames.map ( name => () => ask.input ( `${name}:`, _.get ( metadata.schema.variables[name], 'default' ) ) ) ),
+        variables = _.zipObject ( variablesNames, variablesValues );
 
   metadata.renderVariables = variables;
 
