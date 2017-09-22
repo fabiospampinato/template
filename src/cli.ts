@@ -3,6 +3,7 @@
 
 import * as caporal from 'caporal';
 import * as readPkg from 'read-pkg-up';
+import * as updateNotifier from 'update-notifier';
 import Template from '.';
 
 /* CLI */
@@ -10,6 +11,8 @@ import Template from '.';
 async function CLI () {
 
   const {pkg} = await readPkg ({ cwd: __dirname });
+
+  updateNotifier ({ pkg }).notify ();
 
   caporal
     .version ( pkg.version )
