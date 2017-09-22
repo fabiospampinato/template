@@ -1,6 +1,5 @@
 
 Now:
-  ☐ don't run `git pull` if it's not a git repository
   ☐ auto-completition
     ☐ command name
     ☐ possibile template name

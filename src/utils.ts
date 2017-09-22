@@ -3,10 +3,11 @@
 
 import * as _ from 'lodash';
 import * as absolute from 'absolute';
+import ask from 'inquirer-helpers';
 import * as del from 'del';
 import * as handlebars from 'handlebars';
 import * as finder from 'fs-finder';
-import ask from 'inquirer-helpers';
+import * as fs from 'fs';
 import * as isDirectory from 'is-directory';
 import * as isUrl from 'is-url';
 import * as loadJSON from 'load-json-file';
@@ -36,6 +37,17 @@ const Utils = {
   delete ( path ) {
 
     return del ( path, { force: true } );
+
+  },
+
+  exists ( path ) {
+
+    try {
+      fs.accessSync ( path );
+      return true;
+    } catch ( e ) {
+      return false;
+    }
 
   },
 

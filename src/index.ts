@@ -1,10 +1,11 @@
 
 /* IMPORT */
 
+import ask from 'inquirer-helpers';
 import * as chalk from 'chalk';
 import {exec} from 'child_process';
 import * as fs from 'fs';
-import ask from 'inquirer-helpers';
+import * as isUrl from 'is-url';
 import * as metalsmith from 'metalsmith';
 import * as path from 'path';
 import * as pify from 'pify';
@@ -136,7 +137,15 @@ const Template = {
 
       try {
 
-        await pify ( exec )( `git clone ${endpoint} ${destination}` );
+        if ( isUrl ( endpoint ) ) {
+
+          await pify ( exec )( `git clone ${endpoint} ${destination}` );
+
+        } else { // Local directory
+
+          await pify ( exec )( `rsync -av --exclude=*/.git ${endpoint}/ ${destination}` );
+
+        }
 
         console.log ( `Template "${repository}" installed as "${template}"` );
         console.log ( `Run "template create ${template} ${chalk.blue ( '<project>' )}" to get started` );
@@ -206,15 +215,25 @@ const Template = {
 
       try {
 
-        const result = await pify ( exec )( 'git pull', { cwd: folderPath } );
+        const isRepository = Utils.exists ( path.join ( folderPath, '.git' ) );
 
-        if ( result.match ( /already up-to-date/i ) ) {
+        if ( isRepository ) {
 
-          console.log ( `No updates available for "${template}"` );
+          const result = await pify ( exec )( 'git pull', { cwd: folderPath } );
+
+          if ( result.match ( /already up-to-date/i ) ) {
+
+            console.log ( `No updates available for "${template}"` );
+
+          } else {
+
+            console.log ( `"${template}" has been updated` );
+
+          }
 
         } else {
 
-          console.log ( `"${template}" has been updated` );
+          console.error ( `"${template}" is not a repository, it can't be updated` );
 
         }
 
