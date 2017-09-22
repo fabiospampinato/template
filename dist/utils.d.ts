@@ -1,6 +1,7 @@
 declare const Utils: {
     loadJSON(path: any, fallback?: {}): Promise<any>;
     delete(path: any): any;
+    exists(path: any): boolean;
     repository: {
         getEndpoint(repository: string): string | undefined;
     };
@@ -13,9 +14,6 @@ declare const Utils: {
         guessName(endpoint: string): string | undefined;
     };
     prompt: {
-        confirm(message: string, fallback?: boolean): Promise<boolean>;
-        input(message: any, fallback?: any): Promise<any>;
-        list(message: any, arr: any, fallback?: any): Promise<any>;
         command(): Promise<any>;
         template(): Promise<any>;
     };

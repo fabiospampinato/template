@@ -37,29 +37,19 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var _ = require("lodash");
-var inquirer = require("inquirer");
+var inquirer_helpers_1 = require("inquirer-helpers");
+var series = require("p-series");
 /* PROMPT */
 function prompt(files, metalsmith, next) {
     return __awaiter(this, void 0, void 0, function () {
-        function validate(x) {
-            return !(_.isUndefined(x) || (_.isString(x) && !x.trim()));
-        }
-        function makeQuestion(prompt) {
-            var obj = metadata.schema.variables[prompt];
-            return _.extend({
-                name: prompt,
-                message: prompt + ":",
-                validate: _.isUndefined(obj.default) ? validate : function () { return true; }
-            }, obj);
-        }
-        var metadata, promptsOrder, prompts, questions, variables;
+        var metadata, variablesOrder, variablesNames, variablesValues, variables;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    metadata = metalsmith.metadata(), promptsOrder = metadata.schema.variablesOrder || [], prompts = promptsOrder.concat(_.sortBy(_.difference(Object.keys(metadata.schema.variables), promptsOrder), [function (x) { return x.toLowerCase(); }])), questions = prompts.map(makeQuestion);
-                    return [4 /*yield*/, inquirer.prompt(questions)];
+                    metadata = metalsmith.metadata(), variablesOrder = metadata.schema.variablesOrder || [], variablesNames = variablesOrder.concat(_.sortBy(_.difference(Object.keys(metadata.schema.variables), variablesOrder), [function (x) { return x.toLowerCase(); }]));
+                    return [4 /*yield*/, series(variablesNames.map(function (name) { return function () { return inquirer_helpers_1.default.input(name + ":", _.get(metadata.schema.variables[name], 'default')); }; }))];
                 case 1:
-                    variables = _a.sent();
+                    variablesValues = _a.sent(), variables = _.zipObject(variablesNames, variablesValues);
                     metadata.renderVariables = variables;
                     next();
                     return [2 /*return*/];
@@ -70,4 +60,4 @@ function prompt(files, metalsmith, next) {
 ;
 /* EXPORT */
 exports.default = prompt;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHJvbXB0LmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vc3JjL21pZGRsZXdhcmVzL3Byb21wdC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFDQSxZQUFZOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztBQUVaLDBCQUE0QjtBQUM1QixtQ0FBcUM7QUFFckMsWUFBWTtBQUVaLGdCQUF3QixLQUFLLEVBQUUsVUFBVSxFQUFFLElBQUk7O1FBRTdDLGtCQUFvQixDQUFDO1lBQ25CLE1BQU0sQ0FBQyxDQUFDLENBQUUsQ0FBQyxDQUFDLFdBQVcsQ0FBRyxDQUFDLENBQUUsSUFBSSxDQUFFLENBQUMsQ0FBQyxRQUFRLENBQUcsQ0FBQyxDQUFFLElBQUksQ0FBQyxDQUFDLENBQUMsSUFBSSxFQUFHLENBQUUsQ0FBRSxDQUFDO1FBQ3hFLENBQUM7UUFFRCxzQkFBd0IsTUFBTTtZQUM1QixJQUFNLEdBQUcsR0FBRyxRQUFRLENBQUMsTUFBTSxDQUFDLFNBQVMsQ0FBQyxNQUFNLENBQUMsQ0FBQztZQUM5QyxNQUFNLENBQUMsQ0FBQyxDQUFDLE1BQU0sQ0FBRztnQkFDaEIsSUFBSSxFQUFFLE1BQU07Z0JBQ1osT0FBTyxFQUFLLE1BQU0sTUFBRztnQkFDckIsUUFBUSxFQUFFLENBQUMsQ0FBQyxXQUFXLENBQUcsR0FBRyxDQUFDLE9BQU8sQ0FBRSxHQUFHLFFBQVEsR0FBRyxjQUFNLE9BQUEsSUFBSSxFQUFKLENBQUk7YUFDaEUsRUFBRSxHQUFHLENBQUUsQ0FBQztRQUNYLENBQUM7Ozs7OytCQUVnQixVQUFVLENBQUMsUUFBUSxFQUFHLGlCQUNsQixRQUFRLENBQUMsTUFBTSxDQUFDLGNBQWMsSUFBSSxFQUFFLFlBQ3pDLFlBQVksQ0FBQyxNQUFNLENBQUcsQ0FBQyxDQUFDLE1BQU0sQ0FBRyxDQUFDLENBQUMsVUFBVSxDQUFHLE1BQU0sQ0FBQyxJQUFJLENBQUcsUUFBUSxDQUFDLE1BQU0sQ0FBQyxTQUFTLENBQUUsRUFBRSxZQUFZLENBQUUsRUFBRSxDQUFDLFVBQUEsQ0FBQyxJQUFJLE9BQUEsQ0FBQyxDQUFDLFdBQVcsRUFBRyxFQUFoQixDQUFnQixDQUFDLENBQUUsQ0FBRSxjQUNwSSxPQUFPLENBQUMsR0FBRyxDQUFHLFlBQVksQ0FBRTtvQkFDNUIscUJBQU0sUUFBUSxDQUFDLE1BQU0sQ0FBRyxTQUFTLENBQUUsRUFBQTs7Z0NBQW5DLFNBQW1DO29CQUVyRCxRQUFRLENBQUMsZUFBZSxHQUFHLFNBQVMsQ0FBQztvQkFFckMsSUFBSSxFQUFHLENBQUM7Ozs7O0NBRVQ7QUFBQSxDQUFDO0FBRUYsWUFBWTtBQUVaLGtCQUFlLE1BQU0sQ0FBQyJ9
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHJvbXB0LmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vc3JjL21pZGRsZXdhcmVzL3Byb21wdC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFDQSxZQUFZOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztBQUVaLDBCQUE0QjtBQUM1QixxREFBbUM7QUFDbkMsaUNBQW1DO0FBRW5DLFlBQVk7QUFFWixnQkFBd0IsS0FBSyxFQUFFLFVBQVUsRUFBRSxJQUFJOzs7Ozs7K0JBRTVCLFVBQVUsQ0FBQyxRQUFRLEVBQUcsbUJBQ2hCLFFBQVEsQ0FBQyxNQUFNLENBQUMsY0FBYyxJQUFJLEVBQUUsbUJBQ3BDLGNBQWMsQ0FBQyxNQUFNLENBQUcsQ0FBQyxDQUFDLE1BQU0sQ0FBRyxDQUFDLENBQUMsVUFBVSxDQUFHLE1BQU0sQ0FBQyxJQUFJLENBQUcsUUFBUSxDQUFDLE1BQU0sQ0FBQyxTQUFTLENBQUUsRUFBRSxjQUFjLENBQUUsRUFBRSxDQUFDLFVBQUEsQ0FBQyxJQUFJLE9BQUEsQ0FBQyxDQUFDLFdBQVcsRUFBRyxFQUFoQixDQUFnQixDQUFDLENBQUUsQ0FBRTtvQkFDekkscUJBQU0sTUFBTSxDQUFHLGNBQWMsQ0FBQyxHQUFHLENBQUcsVUFBQSxJQUFJLElBQUksT0FBQSxjQUFNLE9BQUEsMEJBQUcsQ0FBQyxLQUFLLENBQU0sSUFBSSxNQUFHLEVBQUUsQ0FBQyxDQUFDLEdBQUcsQ0FBRyxRQUFRLENBQUMsTUFBTSxDQUFDLFNBQVMsQ0FBQyxJQUFJLENBQUMsRUFBRSxTQUFTLENBQUUsQ0FBRSxFQUE5RSxDQUE4RSxFQUFwRixDQUFvRixDQUFFLENBQUUsRUFBQTs7c0NBQXBJLFNBQW9JLGNBQzFJLENBQUMsQ0FBQyxTQUFTLENBQUcsY0FBYyxFQUFFLGVBQWUsQ0FBRTtvQkFFakUsUUFBUSxDQUFDLGVBQWUsR0FBRyxTQUFTLENBQUM7b0JBRXJDLElBQUksRUFBRyxDQUFDOzs7OztDQUVUO0FBQUEsQ0FBQztBQUVGLFlBQVk7QUFFWixrQkFBZSxNQUFNLENBQUMifQ==
