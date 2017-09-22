@@ -95,6 +95,8 @@ const Template = {
         if ( err ) throw err;
       });
 
+    console.log ( `Created "${destination}"` );
+
   },
 
   async list () {
