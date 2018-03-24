@@ -12,6 +12,7 @@ declare const Utils: {
     template: {
         getPath(name: any, checkExistence?: boolean): string;
         guessName(endpoint: string): string | undefined;
+        isFileSkipped(filepath: any, globs: any): boolean;
     };
     prompt: {
         command(): Promise<any>;

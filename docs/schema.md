@@ -18,6 +18,7 @@ The template-specific schema is the `template.json` file, and this is what it mi
 
 ```json
 {
+  "filter": ["**/*", "!**/*.html"],
   "variablesOrder": ["name", "description", "version", "author"],
   "variables": {
     "version": {
@@ -27,9 +28,13 @@ The template-specific schema is the `template.json` file, and this is what it mi
 }
 ```
 
-It defines a fixed variables order, that's basically the order in which values for those variables will be asked for.
+It defines:
 
-It also defines a default value for the `version` variable.
+- Some filtering globs, used for avoid parsing particular files with [handlebars](http://handlebarsjs.com).
+
+- A fixed variables order, that's basically the order in which values for those variables will be asked for.
+
+- A default value for the `version` variable.
 
 Each variable maps to an object used by [inquirer](https://www.npmjs.com/package/inquirer#question) to prompt you for a value for that variable. You may define any other key used by inquirer, like a custom "message" string.
 

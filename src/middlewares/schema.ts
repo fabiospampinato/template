@@ -17,12 +17,19 @@ async function schema ( files, metalsmith, next ) {
         templatePath = path.dirname ( source ),
         template = path.basename ( templatePath );
 
+  /* TEMPLATE SCHEMA */
+
+  const templateSchema = await Utils.loadJSON ( path.join ( templatePath, Config.templateConfigName ) ),
+        {filter} = templateSchema;
+
   /* FILES SCHEMA */
 
   const filesVariables = {},
         filesSchema = { variables: filesVariables };
 
-  _.forOwn ( files, file => {
+  _.forOwn ( files, ( file, filepath ) => {
+
+    if ( Utils.template.isFileSkipped ( filepath, filter ) ) return;
 
     const {contents} = file;
 
@@ -33,10 +40,6 @@ async function schema ( files, metalsmith, next ) {
     _.extend ( filesVariables, fileSchema );
 
   });
-
-  /* TEMPLATE SCHEMA */
-
-  const templateSchema = await Utils.loadJSON ( path.join ( templatePath, Config.templateConfigName ) );
 
   /* COMPUTER SCHEMA */
 

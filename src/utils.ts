@@ -11,6 +11,7 @@ import * as fs from 'fs';
 import * as isDirectory from 'is-directory';
 import * as isUrl from 'is-url';
 import * as loadJSON from 'load-json-file';
+import * as multimatch from 'multimatch';
 import * as path from 'path';
 import Config from './config';
 import * as Helpers from './helpers';
@@ -134,6 +135,12 @@ const Utils = {
       return lastPart.trim ()
                      .replace ( /^template-/, '' )
                      .replace ( /\.git$/, '' );
+
+    },
+
+    isFileSkipped ( filepath, globs ) {
+
+      return globs && !multimatch ( filepath, globs, { dot: true } ).length;
 
     }
 
