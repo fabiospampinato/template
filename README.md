@@ -9,8 +9,8 @@ Inspired by [Khaos](https://github.com/segmentio/khaos), but with a better CLI, 
 
 ## Install
 
-```shell
-$ npm install -g @fabiospampinato/template
+```sh
+npm install -g @fabiospampinato/template
 ```
 
 ## Documentation
@@ -23,21 +23,21 @@ $ npm install -g @fabiospampinato/template
 
 First of all you've got to install a template, for example let's install [fabiospampinato/template-typescript-package](https://github.com/fabiospampinato/template-typescript-package) as the `typescript-package` template:
 
-```shell
-$ template install fabiospampinato/template-typescript-package typescript-package
+```sh
+template install fabiospampinato/template-typescript-package typescript-package
 ```
 
 Now you should have that downloaded locally under your `~/.template` directory. You may also put templates there manually, if you don't feel like creating a public repository for them.
 
 It's time to use the newly installed template to create a new project called `my-package`:
 
-```shell
-$ template create typescript-package my-package
+```sh
+template create typescript-package my-package
 ```
 
 Now it will ask you to provide values for the placeholders found inside the template:
 
-```shell
+```sh
 name: my-package
 description: This is a description
 version: 1.0.0
