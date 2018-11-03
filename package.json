@@ -11,13 +11,12 @@
     "clean": "npm run clean:dist && npm run clean:coverage",
     "compile": "tsc --skipLibCheck",
     "compile:watch": "tsc --skipLibCheck --watch",
-    "lint": "tslint \"src/**/*.ts*\" --force",
     "test": "ava",
     "test:watch": "ava --watch",
     "coverage": "nyc --reporter=html ava",
     "report": "nyc report",
     "report:html": "open coverage/index.html",
-    "prepublish": "npm run clean && npm run lint && npm run compile && npm run coverage"
+    "prepublish": "npm run clean && npm run compile && npm run coverage"
   },
   "ava": {
     "files": [
@@ -73,7 +72,6 @@
     "ava-spec": "^1.1.0",
     "nyc": "^11.1.0",
     "rimraf": "^2.6.0",
-    "tslint": "^4.4.2",
     "typescript": "^3.0.3"
   }
 }
