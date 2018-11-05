@@ -254,4 +254,4 @@ const Template = {
 
 /* EXPORT */
 
-export default Template;
+export = Object.assign ( Template, { default: Template } );
