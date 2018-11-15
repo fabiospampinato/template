@@ -45,6 +45,8 @@
     "simple"
   ],
   "dependencies": {
+    "@types/lodash": "^4.14.118",
+    "@types/node": "^10.12.8",
     "absolute": "0.0.1",
     "caporal": "git://github.com/Szpadel/Caporal.js.git#fix-help-def-command",
     "chalk": "^2.1.0",
@@ -66,8 +68,6 @@
     "update-notifier": "^2.2.0"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.74",
-    "@types/node": "^8.0.26",
     "ava": "^0.22.0",
     "ava-spec": "^1.1.0",
     "nyc": "^11.1.0",
