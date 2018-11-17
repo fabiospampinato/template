@@ -1,6 +1,6 @@
 
 <p align="center">
-	<img src="resources/logo-header.png" width=500 alt="Logo">
+  <img src="resources/logo-header.png" width=500 alt="Logo">
 </p>
 
 A super-simple way to create new projects based on templates.
