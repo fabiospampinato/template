@@ -2,7 +2,7 @@
 /* IMPORT */
 
 import ask from 'inquirer-helpers';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import {exec} from 'child_process';
 import * as fs from 'fs';
 import * as isUrl from 'is-url';
