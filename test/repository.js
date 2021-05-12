@@ -2,7 +2,7 @@
 /* IMPORT */
 
 import {describe} from 'ava-spec';
-import Utils from '../dist/utils';
+import Utils from '../dist/src/utils';
 
 /* REPOSITORY */
 

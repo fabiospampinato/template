@@ -3,7 +3,7 @@
 
 import {describe} from 'ava-spec';
 import * as handlebars from 'handlebars';
-import Utils from '../dist/utils';
+import Utils from '../dist/src/utils';
 
 /* HANDLEBARS */
 
