@@ -1,7 +1,7 @@
 {
   "name": "@fabiospampinato/template",
   "description": "A super-simple way to create new projects based on templates.",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "bin": "dist/src/bin/index.js",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
