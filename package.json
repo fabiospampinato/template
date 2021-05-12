@@ -2,9 +2,9 @@
   "name": "@fabiospampinato/template",
   "description": "A super-simple way to create new projects based on templates.",
   "version": "1.1.4",
-  "bin": "dist/bin/index.js",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "bin": "dist/src/bin/index.js",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "scripts": {
     "clean:dist": "rimraf dist",
     "clean:coverage": "rimraf coverage .nyc_output",
@@ -45,11 +45,8 @@
     "simple"
   ],
   "dependencies": {
-    "@types/lodash": "^4.14.118",
-    "@types/node": "^10.12.8",
     "absolute": "0.0.1",
     "caporal": "git://github.com/Szpadel/Caporal.js.git#fix-help-def-command",
-    "chalk": "^2.1.0",
     "consolidate": "^0.14.5",
     "del": "^3.0.0",
     "fs-finder": "^1.8.1",
@@ -64,10 +61,11 @@
     "multimatch": "^2.1.0",
     "p-series": "^1.0.0",
     "pify": "^3.0.0",
-    "read-pkg-up": "^2.0.0",
-    "update-notifier": "^2.2.0"
+    "specialist": "^0.3.0"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.118",
+    "@types/node": "^10.12.8",
     "ava": "^0.22.0",
     "ava-spec": "^1.1.0",
     "nyc": "^11.1.0",

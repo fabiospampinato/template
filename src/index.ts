@@ -2,13 +2,13 @@
 /* IMPORT */
 
 import ask from 'inquirer-helpers';
-import chalk from 'chalk';
 import {exec} from 'child_process';
 import * as fs from 'fs';
 import * as isUrl from 'is-url';
 import * as metalsmith from 'metalsmith';
 import * as path from 'path';
 import * as pify from 'pify';
+import {color} from 'specialist';
 import Config from './config';
 import Utils from './utils';
 
@@ -150,7 +150,7 @@ const Template = {
         }
 
         console.log ( `Template "${repository}" installed as "${template}"` );
-        console.log ( `Run "template create ${template} ${chalk.blue ( '<project>' )}" to get started` );
+        console.log ( `Run "template create ${template} ${color.blue ( '<project>' )}" to get started` );
 
       } catch ( e ) {
 

@@ -2,20 +2,18 @@
 /* IMPORT */
 
 import * as caporal from 'caporal';
-import * as readPkg from 'read-pkg-up';
-import * as updateNotifier from 'update-notifier';
+import {updater} from 'specialist';
+import {name, version} from '../package.json';
 import Template from '.';
 
 /* CLI */
 
 async function CLI () {
 
-  const {pkg} = await readPkg ({ cwd: __dirname });
-
-  updateNotifier ({ pkg }).notify ();
+  updater ({ name, version });
 
   caporal
-    .version ( pkg.version )
+    .version ( version )
     /* WIZARD */
     .action ( () => Template.wizard () )
     /* CREATE */
