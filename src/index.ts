@@ -68,6 +68,8 @@ const Template = {
     const templateMetadata = await Utils.metadata.get ( template );
     const templateVariables: Record<string, unknown> = {};
 
+    console.log ( '' );
+
     for ( const variable in templateMetadata?.variables ) {
       const variableType = templateMetadata?.variables?.[variable]?.type;
       const variableInitial = templateMetadata?.variables?.[variable]?.default;
