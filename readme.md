@@ -15,7 +15,7 @@ npm install -g @fabiospampinato/template
 
 ## Usage
 
-//TODO: Demo
+https://github.com/fabiospampinato/template/assets/1812093/4c53bf75-eb08-49c2-8b7f-8dae6dfa04eb
 
 <details>
 <summary>Overview</summary>
