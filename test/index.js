@@ -1,16 +1,16 @@
 
 /* IMPORT */
 
-import {describe} from 'ava-spec';
-import Utils from '../dist/src/utils';
+import {describe} from 'fava';
+import Utils from '../dist/utils.js';
 
-/* REPOSITORY */
+/* MAIN */
 
-describe ( 'Repository', it => {
+describe ( 'Template', it => {
 
   describe ( 'getEndpoint', it => {
 
-    it ( 'Gets a git endpoint from a string', t => {
+    it ( 'gets a git endpoint from a string', t => {
 
       const tests = [
         ['http://foo.com/bar.git', 'http://foo.com/bar.git'],
@@ -26,7 +26,9 @@ describe ( 'Repository', it => {
       ];
 
       tests.forEach ( ([ str, endpoint ]) => {
+
         t.is ( Utils.repository.getEndpoint ( str ), endpoint, str );
+
       });
 
     });

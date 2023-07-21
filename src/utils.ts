@@ -1,146 +1,130 @@
 
 /* IMPORT */
 
-import * as _ from 'lodash';
-import * as absolute from 'absolute';
-import ask from 'inquirer-helpers';
-import * as del from 'del';
-import * as handlebars from 'handlebars';
-import * as finder from 'fs-finder';
-import * as fs from 'fs';
-import * as isDirectory from 'is-directory';
-import * as isUrl from 'is-url';
-import * as loadJSON from 'load-json-file';
-import * as multimatch from 'multimatch';
-import * as path from 'path';
-import Config from './config';
-import * as Helpers from './helpers';
-import * as Middlewares from './middlewares';
+import _ from 'lodash';
+import {spawn, spawnSync} from 'node:child_process';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import process from 'node:process';
+import prompts from 'prompts';
+import type {SpawnOptions} from 'node:child_process';
+import type {Stats} from 'node:fs';
+import {METADATA_GLOBAL_NAME, METADATA_LOCAL_NAME, TEMPLATES_PATH} from './constants';
+import type {MetadataGlobal, MetadataLocal} from './types';
 
-/* UTILS */
+/* MAIN */
 
 const Utils = {
 
-  async loadJSON ( path, fallback = {} ) {
+  /* API */
 
-    try {
+  fs: {
 
-      return await loadJSON ( path );
+    delete: async ( targetPath: string ): Promise<void> => {
 
-    } catch ( e ) {
+      targetPath = path.resolve ( targetPath );
 
-      return fallback;
+      if ( !targetPath.startsWith ( TEMPLATES_PATH ) ) throw new Error ( `Refusing to delete something outside of "${TEMPLATES_PATH}", for safety` );
 
-    }
+      await fs.rm ( targetPath, { recursive: true } );
 
-  },
+    },
 
-  delete ( path ) {
+    isBinary: ( fileContent: string ): boolean => { //TODO: Maybe write this better
 
-    return del ( path, { force: true } );
+      return /[\u0000-\u0007]/.test ( fileContent );
 
-  },
+    },
 
-  exists ( path ) {
+    isFile: async ( targetPath: string ): Promise<boolean> => {
 
-    try {
-      fs.accessSync ( path );
-      return true;
-    } catch ( e ) {
-      return false;
-    }
+      const stats = await Utils.fs.stat ( targetPath );
 
-  },
+      return !!stats?.isFile ();
 
-  repository: {
+    },
 
-    getEndpoint ( repository: string ) {
+    isFolder: async ( targetPath: string ): Promise<boolean> => {
 
-      if ( isUrl ( repository ) ) {
+      const stats = await Utils.fs.stat ( targetPath );
 
-        /* GIT ENDPOINT */
+      return !!stats?.isDirectory ();
 
-        if ( repository.match ( /\.git$/ ) ) return repository;
+    },
 
-        /* GITHUB REPOSITORY */
+    readJSON: async ( filePath: string ): Promise<{} | undefined> => {
 
-        const repo = repository.match ( /.+github\.com\/([^\s\/.]+)\/([^\s\/#]+)(?:$|\/|#)/ );
+      try {
 
-        if ( repo ) return `https://github.com/${repo[1]}/${repo[2]}.git`;
+        const fileContent = await fs.readFile ( filePath, 'utf8' );
+        const fileValue = JSON.parse ( fileContent );
 
-      } else {
+        if ( !_.isPlainObject ( fileValue ) ) return;
 
-        /* GITHUB SHORTHAND */
+        return fileValue;
 
-        const shorthand = repository.match ( /^([^\s\/.]+)\/([^\s\/]+)$/ );
+      } catch {
 
-        if ( shorthand ) return `https://github.com/${shorthand[1]}/${shorthand[2]}.git`;
-
-        /* PATH */
-
-        if ( absolute ( repository ) ) {
-
-          if ( isDirectory.sync ( repository ) ) return repository;
-
-        } else {
-
-          const fullPath = path.join ( process.cwd (), repository );
-
-          if ( isDirectory.sync ( fullPath ) ) return fullPath;
-
-        }
+        return;
 
       }
 
-      return;
+    },
+
+    stat: async ( targetPath: string ): Promise<Stats | undefined> => {
+
+      try {
+
+        return await fs.stat ( targetPath );
+
+      } catch {
+
+        return;
+
+      }
 
     }
 
   },
 
-  templates: {
+  metadata: {
 
-    getPaths () {
+    get: async ( template: string ): Promise<MetadataLocal | undefined> => {
 
-      return _.sortBy ( finder.in ( Config.directory ).findDirectories (), [p => p.toLowerCase ()] ) as string[];
+      const metadataGlobal = await Utils.metadata.getGlobal ();
+      const metadataLocal = await Utils.metadata.getLocal ( template );
+      const metadata = _.merge ( {}, metadataLocal, metadataGlobal?.templates?.[template] );
+
+      return metadata;
 
     },
 
-    getNames () {
+    getGlobal: async (): Promise<MetadataGlobal | undefined> => {
 
-      const paths = Utils.templates.getPaths ();
+      const metadataPath = path.join ( TEMPLATES_PATH, METADATA_GLOBAL_NAME );
+      const metadata = await Utils.fs.readJSON ( metadataPath );
 
-      return paths.map ( p => path.basename ( p ) );
+      return metadata;
+
+    },
+
+    getLocal: async ( template: string ): Promise<MetadataLocal | undefined> => {
+
+      const templatePath = await Utils.template.getPath ( template );
+      const metadataPath = path.join ( templatePath, METADATA_LOCAL_NAME );
+      const metadata = await Utils.fs.readJSON ( metadataPath );
+
+      return metadata;
 
     }
 
   },
 
-  template: {
+  path: {
 
-    getPath ( name, checkExistence = false ) {
+    isUrl: ( targetPath: string ): boolean => {
 
-      const templatePath = path.join ( Config.directory, name );
-
-      return checkExistence ? isDirectory.sync ( templatePath ) && templatePath : templatePath;
-
-    },
-
-    guessName ( endpoint: string ) {
-
-      const lastPart = _.last ( endpoint.split ( '/' ) );
-
-      if ( !lastPart ) return;
-
-      return lastPart.trim ()
-                     .replace ( /^template-/, '' )
-                     .replace ( /\.git$/, '' );
-
-    },
-
-    isFileSkipped ( filepath, globs ) {
-
-      return globs && !multimatch ( filepath, globs, { dot: true } ).length;
+      return /^\w+(\+\w+)?:\/\//.test ( targetPath );
 
     }
 
@@ -148,105 +132,143 @@ const Utils = {
 
   prompt: {
 
-    command () {
+    boolean: async ( message: string, initial: boolean = true ): Promise<boolean | false> => {
 
-      const commands = ['create', 'list', 'install', 'uninstall', 'update'];
+      const result = await prompts ({
+        type: 'toggle',
+        name: 'value',
+        message,
+        initial,
+        active: 'yes',
+        inactive: 'no'
+      });
 
-      return ask.list ( 'What command to you want to execute?', commands );
+      return result.value;
 
     },
 
-    template () {
+    string: async ( message: string, initial?: string ): Promise<string | false> => {
 
-      const templates = Utils.templates.getNames ();
+      const result = await prompts ({
+        type: 'text',
+        name: 'value',
+        message,
+        initial,
+        validate: value => value.length > 0
+      });
 
-      return ask.list ( 'What template to you want to use?', templates );
+      return result.value;
+    }
+
+  },
+
+  repository: {
+
+    getEndpoint: async ( repository: string ): Promise<string | undefined> => {
+
+      if ( Utils.path.isUrl ( repository ) ) {
+
+        /* GIT ENDPOINT */
+
+        if ( /\.git$/.test ( repository ) ) return repository;
+
+        /* GITHUB REPOSITORY */
+
+        const details = repository.match ( /.+github\.com\/([^\s\/.]+)\/([^\s\/#]+)(?:$|\/|#)/ );
+
+        if ( details ) return `https://github.com/${details[1]}/${details[2]}.git`;
+
+      } else {
+
+        /* GITHUB SHORTHAND */
+
+        const details = repository.match ( /^([^\s\/.]+)\/([^\s\/]+)$/ );
+
+        if ( details ) return `https://github.com/${details[1]}/${details[2]}.git`;
+
+        /* PATH */
+
+        if ( path.isAbsolute ( repository ) ) {
+
+          if ( await Utils.fs.isFolder ( repository ) ) return repository;
+
+        } else {
+
+          const fullPath = path.join ( process.cwd (), repository );
+
+          if ( await Utils.fs.isFolder ( fullPath ) ) return fullPath;
+
+        }
+
+      }
 
     }
 
   },
 
-  handlebars: {
+  shell: {
 
-    useHelpers () {
+    cd: ( targetPath: string ): void => {
 
-      handlebars.registerHelper ({
-        eval: Helpers.eval,
-        _: Helpers.lodash
+      const shell = process.env['SHELL'];
+
+      if ( !shell ) throw new Error ( 'Unable to find current shell in use' );
+
+      spawnSync ( shell, { // Spawning a sub-shell at path
+        cwd: targetPath,
+        stdio: 'inherit',
+        env: process.env
       });
 
     },
 
-    getSchema ( template ) {
+    exec: ( command: string, options?: SpawnOptions ): Promise<boolean> => {
 
-      const body = _.isString ( template ) ? handlebars.parse ( template ).body : template,
-            schema = {},
-            schemaTypes = {
-              BlockStatement: 'confirm',
-              MustacheStatement: 'input'
-            };
+      return new Promise ( resolve => {
 
-      body.forEach ( obj => {
+        const process = spawn ( command, {
+          stdio: 'inherit',
+          shell: true,
+          ...options
+        });
 
-        const {type, params, path, program} = obj,
-              schemaType = schemaTypes[type],
-              objSchema = { type: schemaType };
-
-        if ( !schemaType ) return;
-
-        if ( params.length ) {
-
-          params.forEach ( param => {
-
-            const {type, parts} = param;
-
-            if ( type !== 'PathExpression' ) return;
-
-            schema[parts.join ( '.' )] = objSchema;
-
-          });
-
-        } else if ( path ) {
-
-          schema[path.parts.join ( '.' )] = objSchema;
-
-        }
-
-        if ( obj.hash ) {
-
-          obj.hash.pairs.forEach ( pair => {
-
-            const {original} = pair.value;
-
-            if ( !_.isString ( original ) || !original.match ( /[^\s;.]+/) ) return;
-
-            schema[original] = objSchema;
-
-          });
-
-        }
-
-        if ( program ) {
-
-          _.extend ( schema, Utils.handlebars.getSchema ( program.body ) );
-
-        }
+        process.on ( 'close', code => resolve ( code === 0 ) );
+        process.on ( 'error', () => resolve ( false ) );
 
       });
-
-      return schema;
 
     }
 
   },
 
-  metalsmith: {
+  template: {
 
-    useMiddlewares ( metalsmith ) {
+    getPath: ( name: string ): string => {
 
-      metalsmith.use ( Middlewares.schema )
-                .use ( Middlewares.prompt )
-                .use ( Middlewares.render );
+      return path.join ( TEMPLATES_PATH, name );
+
+    }
+
+  },
+
+  templates: {
+
+    getNames: async (): Promise<string[]> => {
+
+      const dirents = await fs.readdir ( TEMPLATES_PATH, { withFileTypes: true } );
+      const folders = dirents.filter ( dirent => dirent.isDirectory () && !dirent.name.startsWith ( '.' ) );
+      const names = folders.map ( folder => folder.name ).sort ();
+
+      return names;
+
+    },
+
+    getPaths: async (): Promise<string[]> => {
+
+      const names = await Utils.templates.getNames ();
+      const paths = names.map ( name => path.join ( TEMPLATES_PATH, name ) );
+
+      return paths;
 
     }
 

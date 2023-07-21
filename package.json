@@ -1,76 +1,43 @@
 {
   "name": "@fabiospampinato/template",
+  "repository": "github:fabiospampinato/template",
   "description": "A super-simple way to create new projects based on templates.",
   "version": "1.1.5",
-  "bin": "dist/src/bin/index.js",
-  "main": "dist/src/index.js",
-  "types": "dist/src/index.d.ts",
+  "type": "module",
+  "bin": "dist/bin.js",
+  "main": "dist/index.js",
+  "exports": "./dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "clean:dist": "rimraf dist",
-    "clean:coverage": "rimraf coverage .nyc_output",
-    "clean": "npm run clean:dist && npm run clean:coverage",
-    "compile": "tsc --skipLibCheck && tstei",
-    "compile:watch": "tsc --skipLibCheck --watch",
-    "test": "ava",
-    "test:watch": "ava --watch",
-    "coverage": "nyc --reporter=html ava",
-    "report": "nyc report",
-    "report:html": "open coverage/index.html",
-    "prepublishOnly": "npm run clean && npm run compile && npm run coverage"
-  },
-  "ava": {
-    "files": [
-      "test/handlebars.js",
-      "test/repository.js",
-      "test/template.js"
-    ]
-  },
-  "bugs": {
-    "url": "https://github.com/fabiospampinato/template/issues"
-  },
-  "license": "MIT",
-  "author": {
-    "name": "Fabio Spampinato",
-    "email": "spampinabio@gmail.com"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/fabiospampinato/template.git"
+    "clean": "tsex clean",
+    "compile": "tsex compile",
+    "compile:watch": "tsex compile --watch",
+    "test": "tsex test",
+    "test:watch": "tsex test --watch",
+    "prepublishOnly": "tsex prepare"
   },
   "keywords": [
     "template",
     "scaffold",
     "handlebars",
+    "picolate",
     "cli",
     "simple"
   ],
   "dependencies": {
-    "absolute": "0.0.1",
-    "caporal": "git://github.com/Szpadel/Caporal.js.git#fix-help-def-command",
-    "consolidate": "^0.14.5",
-    "del": "^3.0.0",
-    "fs-finder": "^1.8.1",
-    "handlebars": "^4.0.10",
-    "inquirer-helpers": "^1.2.1",
-    "is-directory": "^0.3.1",
-    "is-url": "^1.2.2",
-    "isbinaryfile": "^3.0.2",
-    "load-json-file": "^3.0.0",
-    "lodash": "^4.17.4",
-    "metalsmith": "^2.3.0",
-    "multimatch": "^2.1.0",
-    "p-series": "^1.0.0",
-    "pify": "^3.0.0",
-    "specialist": "^0.3.0"
+    "json-archive": "^2.1.0",
+    "lodash": "^4.17.21",
+    "picolate": "^1.0.1",
+    "prompts": "^2.4.2",
+    "radix64-encoding": "^2.0.1",
+    "specialist": "^1.2.0"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.118",
-    "@types/node": "^10.12.8",
-    "ava": "^0.22.0",
-    "ava-spec": "^1.1.0",
-    "nyc": "^11.1.0",
-    "rimraf": "^2.6.0",
-    "typescript": "^3.0.3",
-    "typescript-transform-export-interop": "^1.0.1"
+    "@types/lodash": "^4.14.195",
+    "@types/node": "^20.4.2",
+    "@types/prompts": "^2.4.4",
+    "fava": "^0.2.0",
+    "tsex": "^2.2.4",
+    "typescript": "^4.9.5"
   }
 }
