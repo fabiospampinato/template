@@ -5,9 +5,11 @@ import _ from 'lodash';
 import {pack, visit} from 'json-archive';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import process from 'node:process';
 import picolate from 'picolate';
 import Base64 from 'radix64-encoding';
 import {color} from 'specialist';
+import {HOOK_POSTINSTALL_NAME} from './constants';
 import Utils from './utils';
 
 /* MAIN */
@@ -110,6 +112,20 @@ const Template = {
     });
 
     console.log ( `Project "${project}" created successfully` );
+
+    const postinstallPath = path.join ( templatePath, 'hooks', HOOK_POSTINSTALL_NAME );
+    const postinstallExists = await Utils.fs.isFile ( postinstallPath );
+
+    if ( postinstallExists ) {
+
+      process.chdir ( outputPath );
+
+      const postinstallModule = await import ( postinstallPath );
+      const postinstall = postinstallModule.default || postinstallModule.postinstall;
+
+      await postinstall ( _.cloneDeep ( templateVariables ) );
+
+    }
 
   },
 
