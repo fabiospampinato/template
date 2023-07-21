@@ -92,7 +92,7 @@ const Template = {
       transform: file => {
         const template = Base64.decodeStr ( file.contents );
         if ( Utils.fs.isBinary ( template ) ) return file;
-        const templateTrimmed = template.replace ( /\r?\n\s+({{.*?}})\s*\r?\n/g, '$1\n' );
+        const templateTrimmed = template.replace ( /\r?\n[^\S\r\n]+({{.*?}})[^\S\r\n]*\r?$/gm, '$1' );
         const templateContext = { _, ...templateVariables };
         const templateRendered = picolate.render ( templateTrimmed, templateContext );
         file.contents = templateRendered;
