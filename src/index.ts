@@ -73,10 +73,10 @@ const Template = {
       const variableInitial = templateMetadata?.variables?.[variable]?.default;
       if ( variableType === 'string' ) {
         const initial = _.isString ( variableInitial ) ? variableInitial : undefined;
-        templateVariables[variable] = Utils.prompt.string ( variable, initial );
+        templateVariables[variable] = await Utils.prompt.string ( variable, initial );
       } else if ( variableType === 'boolean' ) {
         const initial = _.isBoolean ( variableInitial ) ? variableInitial : undefined;
-        templateVariables[variable] = Utils.prompt.boolean ( variable, initial );
+        templateVariables[variable] = await Utils.prompt.boolean ( variable, initial );
       } else {
         throw new Error ( `Unsupported variable type "${variableType}"` );
       }
