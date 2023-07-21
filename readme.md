@@ -93,7 +93,9 @@ As mentioned in the "Overview" section a template must have this structure on di
 └── template.json
 ```
 
-You can put any files and folders you want under the "template" folder. Everything inside it will be copied when creating a new project from it, and non-binary files will be rendered with [`picolate`](https://github.com/fabiospampinato/picolate) before saving them to disk.
+- You can put any files and folders you want under the "template" folder.
+- Everything inside it will be copied when creating a new project from it, and non-binary files will be rendered with [`picolate`](https://github.com/fabiospampinato/picolate) before saving them to disk.
+- Syntax highlighting for those files in your editor will probably be broken, but if you change the language to "Handlebars" it should look nice again.
 
 The "template.json" file should look somewhat like this:
 
