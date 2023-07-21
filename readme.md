@@ -25,7 +25,7 @@ At a high level a template looks like this:
 1. A template is just a folder installed locally simply by `git clone`-ing it into `~/.templates`, or you can copy it manually there.
 2. Each template has a folder named "template" inside it, which is what will be used for creating projects.
 3. Each template has a "template.json" file inside it, which lists all variables used by files inside the "template" folder.
-4. Each template may optionally have a folder named "hooks" inside it, containing files that will be executed at the right times.
+4. Each template may optionally have a folder named "hooks" inside it, containing files that will be executed at the appropriate times.
 
 When creating a project from a template this happens:
 
@@ -100,8 +100,8 @@ As mentioned in the "Overview" section a template must have this structure on di
 - You can put any files and folders you want under the "template" folder.
 - Everything inside it will be copied when creating a new project from it, and non-binary files will be rendered with [`picolate`](https://github.com/fabiospampinato/picolate) before saving them to disk.
 - Syntax highlighting for those files in your editor will probably be broken, but if you change the language to "Handlebars" it should look nice again.
-- Hooks are optional, each of them must export a function, that this program will call at the right times. Inside hooks `process.cwd()` will return the path of the new project.
-- The following hooks are supported.
+- Hooks are optional, each of them must export a function, that this program will call at the right times. Inside hooks `process.cwd ()` will return the path of the new project.
+- The following hooks are supported:
   - `postinstall.js`: it will be called right after a new project has been created. It will receive the object of variables used to render the project.
 
 The "template.json" file should look somewhat like this:
