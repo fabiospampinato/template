@@ -10,7 +10,7 @@ describe ( 'Template', it => {
 
   describe ( 'getEndpoint', it => {
 
-    it ( 'gets a git endpoint from a string', t => {
+    it ( 'gets a git endpoint from a string', async t => {
 
       const tests = [
         ['http://foo.com/bar.git', 'http://foo.com/bar.git'],
@@ -25,11 +25,11 @@ describe ( 'Template', it => {
         ['/', '/']
       ];
 
-      tests.forEach ( ([ str, endpoint ]) => {
+      for ( const [repository, endpoint] of tests ) {
 
-        t.is ( Utils.repository.getEndpoint ( str ), endpoint, str );
+        t.is ( await Utils.repository.getEndpoint ( repository ), endpoint );
 
-      });
+      }
 
     });
 
