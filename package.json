@@ -27,7 +27,7 @@
   "dependencies": {
     "json-archive": "^2.1.0",
     "lodash": "^4.17.21",
-    "picolate": "^1.0.2",
+    "picolate": "^2.0.0",
     "prompts": "^2.4.2",
     "radix64-encoding": "^2.0.1",
     "specialist": "^1.2.0"
