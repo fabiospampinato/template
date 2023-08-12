@@ -27,10 +27,10 @@
   "dependencies": {
     "json-archive": "^2.1.0",
     "lodash": "^4.17.21",
-    "picolate": "^2.0.0",
+    "picolate": "^2.1.0",
     "prask": "^1.5.0",
     "radix64-encoding": "^2.0.1",
-    "specialist": "^1.2.0"
+    "specialist": "^1.3.0"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.197",
