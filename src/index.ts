@@ -77,12 +77,12 @@ const Template = {
       const variableInitial = templateMetadata?.variables?.[variable]?.default;
       if ( variableType === 'string' ) {
         const initial = _.isString ( variableInitial ) ? variableInitial : undefined;
-        const value = await Utils.prompt.string ( variable, initial );
+        const value = await Utils.prompt.string ( `${variable}:`, initial );
         if ( value === undefined ) return;
         templateVariables[variable] = value;
       } else if ( variableType === 'boolean' ) {
         const initial = _.isBoolean ( variableInitial ) ? variableInitial : undefined;
-        const value = await Utils.prompt.boolean ( variable, initial );
+        const value = await Utils.prompt.boolean ( `${variable}:`, initial );
         if ( value === undefined ) return;
         templateVariables[variable] = value;
       } else {
