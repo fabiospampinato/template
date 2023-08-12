@@ -2,7 +2,7 @@
   "name": "@fabiospampinato/template",
   "repository": "github:fabiospampinato/template",
   "description": "A super-simple way to create new projects based on templates.",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "type": "module",
   "bin": "dist/bin.js",
   "main": "dist/index.js",
