@@ -6,7 +6,7 @@ import {spawn, spawnSync} from 'node:child_process';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
-import prompts from 'prompts';
+import * as prask from 'prask';
 import type {SpawnOptions} from 'node:child_process';
 import type {Stats} from 'node:fs';
 import {METADATA_GLOBAL_NAME, METADATA_LOCAL_NAME, TEMPLATES_PATH} from './constants';
@@ -132,32 +132,22 @@ const Utils = {
 
   prompt: {
 
-    boolean: async ( message: string, initial: boolean = true ): Promise<boolean | false> => {
+    boolean: async ( message: string, initial: boolean = true ): Promise<boolean | undefined> => {
 
-      const result = await prompts ({
-        type: 'toggle',
-        name: 'value',
+      return prask.toggle ({
         message,
-        initial,
-        active: 'yes',
-        inactive: 'no'
+        initial
       });
-
-      return result.value;
 
     },
 
-    string: async ( message: string, initial?: string ): Promise<string | false> => {
+    string: async ( message: string, initial?: string ): Promise<string | undefined> => {
 
-      const result = await prompts ({
-        type: 'text',
-        name: 'value',
+      return prask.string ({
         message,
         initial,
-        validate: value => value.length > 0
+        required: true
       });
-
-      return result.value;
     }
 
   },

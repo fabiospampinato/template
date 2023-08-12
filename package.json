@@ -28,14 +28,13 @@
     "json-archive": "^2.1.0",
     "lodash": "^4.17.21",
     "picolate": "^2.0.0",
-    "prompts": "^2.4.2",
+    "prask": "^1.5.0",
     "radix64-encoding": "^2.0.1",
     "specialist": "^1.2.0"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.197",
     "@types/node": "^20.4.10",
-    "@types/prompts": "^2.4.4",
     "fava": "^0.2.1",
     "tsex": "^3.0.1",
     "typescript": "^5.1.6"
