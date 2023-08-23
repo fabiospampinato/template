@@ -32,7 +32,7 @@ When creating a project from a template this happens:
 1. The user is asked to provide a value for each variable listed by the template inside its "template.json" file.
 2. The entire "template" folder inside the template is duplicated.
 3. Each non-binary file inside this folder is rendered with [`picolate`](https://github.com/fabiospampinato/picolate) using the provided variables.
-4. All rendered and non-binary files are copied in a newly created folder that has the name of the project you want to create.
+4. All rendered and binary files are copied in a newly created folder that has the name of the project you want to create.
 5. The postinstall hook, if present, is executed.
 6. That's it.
 
@@ -106,8 +106,12 @@ As mentioned in the "Overview" section a template must have this structure on di
 
 The "template.json" file should look somewhat like this:
 
-```json
+```jsonc
 {
+  "delimiters": [ // This is optional
+    "start": "[[",
+    "end": "]]"
+  ],
   "variables": {
     "name": {
       "type": "string"
@@ -135,6 +139,7 @@ The "template.json" file should look somewhat like this:
 }
 ```
 
+- Custom template delimiters that [`picolate`](https://github.com/fabiospampinato/picolate) will use can be provided, if you need them.
 - The user will be prompted to provide a value for each variable you list here.
 - You should list every single variable referenced by any of your template files.
 - A variable can either be of type "string" or of type "boolean".

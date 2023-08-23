@@ -21,6 +21,10 @@ type MetadataGlobal = {
 };
 
 type MetadataLocal = {
+  delimiters?: {
+    start: string,
+    end: string
+  },
   variables?: Record<string, Variable>
 };
 

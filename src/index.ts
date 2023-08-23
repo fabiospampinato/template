@@ -68,6 +68,7 @@ const Template = {
 
     const templatePack = await pack ( inputPath );
     const templateMetadata = await Utils.metadata.get ( template );
+    const templateDelimiters: [string, string] | undefined = templateMetadata?.delimiters ? [templateMetadata.delimiters.start, templateMetadata.delimiters.end] : undefined;
     const templateVariables: Record<string, unknown> = {};
 
     console.log ( '' );
@@ -96,7 +97,8 @@ const Template = {
         if ( Utils.fs.isBinary ( template ) ) return file;
         const templateTrimmed = template.replace ( /\r?\n[^\S\r\n]+({{.*?}})[^\S\r\n]*\r?$/gm, '$1' );
         const templateContext = { _, ...templateVariables };
-        const templateRendered = picolate.render ( templateTrimmed, templateContext );
+        const templateOptions = { delimiters: templateDelimiters };
+        const templateRendered = picolate.render ( templateTrimmed, templateContext, templateOptions );
         file.contents = templateRendered;
         file.encoding = 'utf8';
         return file;
