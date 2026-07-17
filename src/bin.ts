@@ -24,7 +24,7 @@ bin ( 'template', 'A super-simple way to create new projects based on templates'
     return Template.ls ();
   })
   /* NEW */
-  .command ( 'new', 'Create a p roject from a template' )
+  .command ( 'new', 'Create a project from a template' )
   .argument ( '<template>', 'Template name' )
   .argument ( '<project>', 'Project name' )
   .action ( ( options, args ) => {
